@@ -17,16 +17,28 @@ public:
     MainController();
     void loadImage(QString path);
     void saveImage(QString path);
-    void rotateImgRows(int degree);
+    cv::Rect rotateImgRows(int degree);
+    void flipPoints();
+    void rotatePart(int degree);
+    void imageReset();
 
     cv::Mat getSrcImage();
     cv::Mat getDstImage();
     QPixmap showImage(cv::Mat image);
 
+    QPointF getFirstPoint() const;
+    void setPoint(const QPointF &value);
+    QPointF getSecondPoint() const;
+
+    bool getFlipPt() const;
+
 private:
     Adapter *adapter;
     cv::Mat srcImage;
     cv::Mat dstImage;
+    QPointF firstPoint = QPointF(0,0);
+    QPointF secondPoint = QPointF(0,0);
+    bool flipPt=false;  //flip first and second point of rectangle
 };
 
 #endif // MAINCONTROLLER_H

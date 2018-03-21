@@ -1,13 +1,17 @@
 #include "../headers/MainWindow.h"
 #include "ui_mainwindow.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->controler = new MainController();
-    this->setUpSingnals();
+    controler = new MainController();
+    setUpSingnals();
+    ui->srcImageView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->centralWidget->setMouseTracking(true);
 
 }
 
@@ -18,10 +22,29 @@ MainWindow::~MainWindow()
 
 void MainWindow::setUpSingnals()
 {
+    //onClicks
     connect(ui->btnLoadImg, &QPushButton::clicked, this, (&MainWindow::onLoadImageClick));
     connect(ui->btnSaveImg, &QPushButton::clicked, this, (&MainWindow::onSaveImageClick));
     connect(ui->btnRotateRows, &QPushButton::clicked, this, (&MainWindow::onRotateImageRowsClick));
+    connect(ui->btnReload, &QPushButton::clicked, this, (&MainWindow::onReloadBtnClick));
+    connect(ui->btnRotatePart, &QPushButton::clicked, this, (&MainWindow::onRotatePartClick));
+
+    //onValueChanged
     connect(ui->degreeSlider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValChanged(int)));
+
+    //onMouseClicked
+    connect(ui->srcImageView, SIGNAL(sendMousePoint(QPointF)), this, SLOT(setMousePoint(QPointF)));
+}
+
+void MainWindow::displayImage(cv::Mat img)
+{
+    scene = new QGraphicsScene(this);
+    scene->addPixmap(controler->showImage(img));
+    ui->srcImageView->setScene(scene);
+    //set View according to img
+    ui->srcImageView->setFixedSize(img.cols, img.rows);
+    //resize window
+    adjustSize();
 }
 
 void MainWindow::onLoadImageClick()
@@ -34,12 +57,10 @@ void MainWindow::onLoadImageClick()
     }
 
     //load image
-    this->controler->loadImage(filename);
+    controler->loadImage(filename);
 
     //print
-    QGraphicsScene *scene = new QGraphicsScene(this);
-    scene->addPixmap(controler->showImage(controler->getSrcImage()));
-    ui->srcImageView->setScene(scene); //setPixmap(controler->showImage());
+    displayImage(controler->getSrcImage());
 }
 
 void MainWindow::onSaveImageClick()
@@ -47,8 +68,10 @@ void MainWindow::onSaveImageClick()
     // choose file
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Image"), "",
                                  tr("Image Files (*.png)"));
+    if(filename.isEmpty())
+        return;
     try{
-        this->controler->saveImage(filename);
+        controler->saveImage(filename);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to save file") );
@@ -58,11 +81,9 @@ void MainWindow::onSaveImageClick()
 void MainWindow::onRotateImageRowsClick()
 {
     try{
-        this->controler->rotateImgRows(ui->degreeSlider->value());
+        controler->rotateImgRows(ui->degreeSlider->value());
 
-        QGraphicsScene *scene = new QGraphicsScene(this);
-        scene->addPixmap(controler->showImage(controler->getDstImage()));
-        ui->dstImageView->setScene(scene); //setPixmap(controler->showImage());
+        displayImage(controler->getDstImage());
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to rotate image") );
@@ -70,7 +91,42 @@ void MainWindow::onRotateImageRowsClick()
 
 }
 
+void MainWindow::onReloadBtnClick()
+{
+    try{
+        displayImage(controler->getSrcImage());
+        controler->imageReset();
+
+    }
+    catch (std::exception e){
+        QMessageBox::information(this,tr("Error"), tr("Unable to reload image") );
+    }
+
+}
+
+void MainWindow::onRotatePartClick()
+{
+    try{
+        controler->rotatePart(ui->degreeSlider->value());
+        displayImage(controler->getDstImage());
+    }
+    catch (std::exception e){
+        QMessageBox::information(this,tr("Error"), tr("Mark the area") );
+    }
+}
+
 void MainWindow::onSliderValChanged(int val)
 {
-    ui->SliderValue->setText(QString::number(val)+"°");
+    ui->SliderValue->setText("degrees: "+QString::number(val)+"°");
+}
+
+void MainWindow::setMousePoint(QPointF point)
+{
+    bool pt = controler->getFlipPt();
+    if(!pt)
+        ui->labelPointOne->setText("Point One: x:"+ QString::number(point.x()) +" y:" + QString::number(point.y()));
+    else
+        ui->labelPointTwo->setText("Point Two: x:"+ QString::number(point.x()) +" y:" + QString::number(point.y()));
+
+    controler->setPoint(point);
 }

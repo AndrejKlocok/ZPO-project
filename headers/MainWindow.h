@@ -6,7 +6,7 @@
 #include<QMessageBox>
 
 #include "../headers/MainController.h"
-
+#include "../headers/ImageGraphicsView.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,15 +22,20 @@ public:
 
 private slots:
     void onSliderValChanged(int val);
+    void setMousePoint(QPointF point);
 
 private:
     void setUpSingnals();
+    void displayImage(cv::Mat img);
     void onLoadImageClick();
     void onSaveImageClick();
     void onRotateImageRowsClick();
+    void onReloadBtnClick();
+    void onRotatePartClick();
 
     MainController *controler;
     Ui::MainWindow *ui;
+    QGraphicsScene *scene;
 
 };
 
