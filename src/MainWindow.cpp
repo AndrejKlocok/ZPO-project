@@ -41,9 +41,9 @@ void MainWindow::displayImage(cv::Mat img)
     scene = new QGraphicsScene(this);
     scene->addPixmap(controler->showImage(img));
     ui->srcImageView->setScene(scene);
-    //set View according to img
-    ui->srcImageView->setFixedSize(img.cols, img.rows);
+    ui->srcImageView->setFixedSize(QSize(img.cols, img.rows));
     //resize window
+
     adjustSize();
 }
 
@@ -51,7 +51,7 @@ void MainWindow::onLoadImageClick()
 {
     // choose file
     QString filename = QFileDialog::getOpenFileName(this, tr("Select Image"), "",
-                                 tr("Image Files (*.png)"));
+                                 tr("Image Files (*.png *.jpg)"));
     if(filename.isEmpty()){
         return ;
     }
@@ -67,7 +67,7 @@ void MainWindow::onSaveImageClick()
 {
     // choose file
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Image"), "",
-                                 tr("Image Files (*.png)"));
+                                 tr("Image Files (*.png *.jpg)"));
     if(filename.isEmpty())
         return;
     try{
@@ -129,4 +129,9 @@ void MainWindow::setMousePoint(QPointF point)
         ui->labelPointTwo->setText("Point Two: x:"+ QString::number(point.x()) +" y:" + QString::number(point.y()));
 
     controler->setPoint(point);
+}
+
+void MainWindow::adjustWindowSize()
+{
+    adjustSize();
 }

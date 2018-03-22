@@ -19,7 +19,6 @@ signals:
 
 public slots:
     void mousePressEvent(QMouseEvent *e);
-    //void mouseMoveEvent(QMouseEvent *move);
 
 private:
     QGraphicsScene *scene;

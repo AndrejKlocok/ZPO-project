@@ -5,9 +5,7 @@
 ImageGraphicsView::ImageGraphicsView(QWidget *parent):
     QGraphicsView(parent)
 {
-    scene = new QGraphicsScene();
-    this->setSceneRect(0,0, 512, 512);
-    this->setScene(scene);
+    //scene = new QGraphicsScene();
 }
 
 void ImageGraphicsView::mousePressEvent(QMouseEvent *e)

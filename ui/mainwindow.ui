@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>825</width>
-    <height>572</height>
+    <width>824</width>
+    <height>565</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <property name="acceptDrops">
     <bool>false</bool>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="8,2">
+   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="8,1">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="8,1">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1">
       <item>
        <layout class="QVBoxLayout" name="ImageLayout">
         <item>
@@ -265,7 +265,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>2</height>
+              <height>30</height>
              </size>
             </property>
             <property name="font">
@@ -330,7 +330,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>825</width>
+     <width>824</width>
      <height>15</height>
     </rect>
    </property>
@@ -350,7 +350,7 @@
   <customwidget>
    <class>ImageGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>imagegraphicsview.h</header>
+   <header>headers/ImageGraphicsView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

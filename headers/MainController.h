@@ -8,6 +8,7 @@
 #include<QFileDialog>
 #include<QPixmap>
 #include<QObject>
+#include<QThread>
 
 #include "../headers/Adapter.h"
 

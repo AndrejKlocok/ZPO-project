@@ -23,7 +23,7 @@ public:
 private slots:
     void onSliderValChanged(int val);
     void setMousePoint(QPointF point);
-
+    void adjustWindowSize();
 private:
     void setUpSingnals();
     void displayImage(cv::Mat img);
@@ -36,7 +36,6 @@ private:
     MainController *controler;
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
-
 };
 
 #endif // MAINWINDOW_H
