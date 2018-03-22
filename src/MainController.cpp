@@ -118,9 +118,6 @@ void MainController::rotatePart(int degree)
 
     //rotate
     cv::warpAffine(imgSmall, rotated, rotationMatrix, imgSmall.size(), cv::INTER_CUBIC , cv::BORDER_CONSTANT, cv::Scalar::all(0));
-    cv::imshow("imgTmp", imgTmp);
-    cv::imshow("imgTmp", rotated);
-
 
     for(int x=0; x<rotated.rows; x++)
         for(int y=0; y<rotated.cols; y++)
