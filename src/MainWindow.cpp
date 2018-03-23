@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->srcImageView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->centralWidget->setMouseTracking(true);
-
 }
 
 MainWindow::~MainWindow()
@@ -42,7 +41,6 @@ void MainWindow::displayImage(cv::Mat img)
     scene->addPixmap(controler->showImage(img));
     ui->srcImageView->setScene(scene);
     ui->srcImageView->setFixedSize(QSize(img.cols, img.rows));
-    //resize window
 
     adjustSize();
 }
@@ -51,7 +49,7 @@ void MainWindow::onLoadImageClick()
 {
     // choose file
     QString filename = QFileDialog::getOpenFileName(this, tr("Select Image"), "",
-                                 tr("Image Files (*.png *.jpg)"));
+                                 tr("Image Files (*.png *.jpg);;All files (*.*)"));
     if(filename.isEmpty()){
         return ;
     }
