@@ -79,7 +79,7 @@ void MainWindow::onSaveImageClick()
 void MainWindow::onRotateImageRowsClick()
 {
     try{
-        controler->rotateImgRows(ui->degreeSlider->value());
+        controler->rotateImgShifts(ui->degreeSlider->value());
 
         displayImage(controler->getDstImage());
     }

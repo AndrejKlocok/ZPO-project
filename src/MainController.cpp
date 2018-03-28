@@ -4,6 +4,7 @@
 MainController::MainController()
 {
     this->adapter = new Adapter();
+    this->rotation = new Rotation();
 }
 
 cv::Mat MainController::getSrcImage()
@@ -60,26 +61,11 @@ void MainController::saveImage(QString path)
     cv::imwrite(path.toStdString(),this->dstImage);
 }
 
-cv::Rect MainController::rotateImgRows(int degree)
+void MainController::rotateImgShifts(int degree)
 {
-    cv::Mat img, matrix;
-    cv::Point2f middle;
-    cv::Rect bbox;
-
+    cv::Mat img;
     img = this->getDstImage();
-    middle = cv::Point2f(0.5f*img.cols, 0.5f*img.rows);
-    matrix = cv::getRotationMatrix2D(middle, (double) degree, 1.0);
-
-    // determine bounding box
-    bbox = cv::RotatedRect(middle, img.size(), degree).boundingRect();
-
-    //adjust transformation matrix
-    //matrix.at<double>(0,2) += bbox.width/2.0 - middle.x;
-    //matrix.at<double>(1,2) += bbox.height/2.0 - middle.y;
-
-
-    cv::warpAffine(img, this->dstImage, matrix, img.size()/*bbox.size()*/,cv::INTER_CUBIC, cv::BORDER_CONSTANT, cv::Scalar::all(0));
-    return bbox;
+    this->dstImage = rotation->rotateShear(degree, img);
 }
 
 void MainController::flipPoints()
@@ -97,7 +83,7 @@ void MainController::rotatePart(int degree)
     imgSmall = getDstImage().clone();
 
     middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
-    rotationMatrix = cv::getRotationMatrix2D(middle, (double) degree, 1.0);
+
 
     //crop image
      cv::Rect rectangle(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
@@ -117,7 +103,10 @@ void MainController::rotatePart(int degree)
                 imgSmall.at<cv::Vec3b>(x,y) = whiteColor;
 
     //rotate
-    cv::warpAffine(imgSmall, rotated, rotationMatrix, imgSmall.size(), cv::INTER_CUBIC , cv::BORDER_CONSTANT, cv::Scalar::all(0));
+    //rotationMatrix = cv::getRotationMatrix2D(middle, (double) degree, 1.0);
+    //get center of rotation
+    rotated = rotation->rotateShear(degree, imgSmall);
+    //cv::warpAffine(imgSmall, rotated, rotationMatrix, imgSmall.size(), cv::INTER_CUBIC , cv::BORDER_CONSTANT, cv::Scalar::all(0));
 
     for(int x=0; x<rotated.rows; x++)
         for(int y=0; y<rotated.cols; y++)

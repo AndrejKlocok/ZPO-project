@@ -28,7 +28,8 @@ SOURCES += \
     src/Main.cpp \
     src/Adapter.cpp \
     src/MainWindow.cpp \
-    src/ImageGraphicsView.cpp
+    src/ImageGraphicsView.cpp \
+    src/Rotation.cpp
 
 unix:!mac {
     message("* Using settings for Unix/Linux.")
@@ -46,7 +47,8 @@ HEADERS += \
     headers/MainWindow.h \
     headers/MainController.h \
     headers/Adapter.h \
-    headers/ImageGraphicsView.h
+    headers/ImageGraphicsView.h \
+    headers/Rotation.h
 
 FORMS += \
         ui/mainwindow.ui

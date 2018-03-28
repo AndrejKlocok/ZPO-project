@@ -8,9 +8,9 @@
 #include<QFileDialog>
 #include<QPixmap>
 #include<QObject>
-#include<QThread>
 
 #include "../headers/Adapter.h"
+#include "../headers/Rotation.h"
 
 class MainController
 {
@@ -18,7 +18,7 @@ public:
     MainController();
     void loadImage(QString path);
     void saveImage(QString path);
-    cv::Rect rotateImgRows(int degree);
+    void rotateImgShifts(int degree);
     void flipPoints();
     void rotatePart(int degree);
     void imageReset();
@@ -40,6 +40,7 @@ private:
     QPointF firstPoint = QPointF(0,0);
     QPointF secondPoint = QPointF(0,0);
     bool flipPt=false;  //flip first and second point of rectangle
+    Rotation *rotation;
 };
 
 #endif // MAINCONTROLLER_H
