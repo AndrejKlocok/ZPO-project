@@ -10,7 +10,7 @@
 #include<QObject>
 
 #include "../headers/Adapter.h"
-#include "../headers/Rotation.h"
+#include "../headers/Transformation.h"
 
 /**
  * @brief The MainController class
@@ -25,6 +25,7 @@ public:
     void flipPoints();
     void rotatePart(int degree, Interpolation::INTERPOLATIONS type);
     void imageReset();
+    void scaleImg(float times);
 
     cv::Mat getSrcImage();
     cv::Mat getDstImage();
@@ -36,14 +37,18 @@ public:
 
     bool getFlipPt() const;
 
+    bool getResized() const;
+
 private:
     Adapter *adapter;
     cv::Mat srcImage;
     cv::Mat dstImage;
+    cv::RotatedRect rectangle;
     QPointF firstPoint = QPointF(0,0);
     QPointF secondPoint = QPointF(0,0);
     bool flipPt=false;  //flip first and second point of rectangle
-    Rotation *rotation;
+    Transformation *transformation;
+    bool resized=false;
 };
 
 #endif // MAINCONTROLLER_H

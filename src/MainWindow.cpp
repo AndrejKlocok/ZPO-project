@@ -11,9 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     controler = new MainController();
-    setUpSingnals();
-    ui->srcImageView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setUpSingnals();
+    this->setScrollBars(false);
     ui->centralWidget->setMouseTracking(true);
 }
 /**
@@ -34,6 +33,8 @@ void MainWindow::setUpSingnals()
     connect(ui->btnRotateRows, &QPushButton::clicked, this, (&MainWindow::onRotateImageRowsClick));
     connect(ui->btnReload, &QPushButton::clicked, this, (&MainWindow::onReloadBtnClick));
     connect(ui->btnRotatePart, &QPushButton::clicked, this, (&MainWindow::onRotatePartClick));
+    connect(ui->btnZoomIn, &QPushButton::clicked, this, (&MainWindow::onZoomInClick));
+    connect(ui->btnZoomOut, &QPushButton::clicked, this, (&MainWindow::onZoomOutClick));
 
     //onValueChanged
     connect(ui->degreeSlider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValChanged(int)));
@@ -45,12 +46,13 @@ void MainWindow::setUpSingnals()
  * @brief MainWindow::displayImage
  * @param img
  */
-void MainWindow::displayImage(cv::Mat img)
+void MainWindow::displayImage(cv::Mat img, bool setSize)
 {
     scene = new QGraphicsScene(this);
     scene->addPixmap(controler->showImage(img));
     ui->srcImageView->setScene(scene);
-    ui->srcImageView->setFixedSize(QSize(img.cols, img.rows));
+    if(setSize)
+        ui->srcImageView->setFixedSize(QSize(img.cols, img.rows));
 
     adjustSize();
 }
@@ -70,7 +72,7 @@ void MainWindow::onLoadImageClick()
     controler->loadImage(filename);
 
     //print
-    displayImage(controler->getSrcImage());
+    displayImage(controler->getSrcImage(), true);
 }
 /**
  * @brief MainWindow::onSaveImageClick
@@ -94,7 +96,8 @@ void MainWindow::onSaveImageClick()
  */
 void MainWindow::onRotateImageRowsClick()
 {
-    try{        
+    try{
+        this->checkZoom();
         if(ui->radioNearest->isChecked()){
             controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::nearest);
         }
@@ -105,10 +108,11 @@ void MainWindow::onRotateImageRowsClick()
             controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bicubic);
         }
 
-        displayImage(controler->getDstImage());
+        displayImage(controler->getDstImage(), true);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to rotate image") );
+        this->onReloadBtnClick();
     }
 
 }
@@ -118,9 +122,12 @@ void MainWindow::onRotateImageRowsClick()
 void MainWindow::onReloadBtnClick()
 {
     try{
-        displayImage(controler->getSrcImage());
+        this->zoomCnt = 0;
+        displayImage(controler->getSrcImage(), true);
         controler->imageReset();
-
+        this->setScrollBars(false);
+         ui->labelPointOne->setText("Point One: x: 0 y:0");
+         ui->labelPointTwo->setText("Point One: x: 0 y:0");
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to reload image") );
@@ -133,6 +140,7 @@ void MainWindow::onReloadBtnClick()
 void MainWindow::onRotatePartClick()
 {
     try{
+        this->checkZoom();
         if(ui->radioNearest->isChecked()){
             controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::nearest);
         }
@@ -143,11 +151,55 @@ void MainWindow::onRotatePartClick()
             controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bicubic);
         }
 
-        //controler->rotatePart(ui->degreeSlider->value());
-        displayImage(controler->getDstImage());
+        displayImage(controler->getDstImage(), true);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Mark the area") );
+    }
+}
+
+void MainWindow::onZoomInClick()
+{
+    try{
+        this->zoomCnt+=1;
+        controler->scaleImg(2);
+        this->setScrollBars(true);
+        displayImage(controler->getDstImage(), false);
+    }
+    catch (std::exception e){
+        QMessageBox::information(this,tr("Error"), tr("Unable to scale image") );
+    }
+}
+
+void MainWindow::onZoomOutClick()
+{
+    try{
+        this->zoomCnt-=1;
+        controler->scaleImg(0.5);
+        this->setScrollBars(true);
+        displayImage(controler->getDstImage(), false);
+    }
+    catch (std::exception e){
+        QMessageBox::information(this,tr("Error"), tr("Unable to scale image") );
+    }
+}
+
+void MainWindow::setScrollBars(bool value)
+{
+    if(value){
+        ui->srcImageView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    }
+    else{
+        ui->srcImageView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
+}
+
+void MainWindow::checkZoom()
+{
+    if(this->zoomCnt != 0){
+        this->onReloadBtnClick();
     }
 }
 /**

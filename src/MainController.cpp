@@ -6,7 +6,7 @@
 MainController::MainController()
 {
     this->adapter = new Adapter();
-    this->rotation = new Rotation();
+    this->transformation = new Transformation();
 }
 /**
  * @brief MainController::getSrcImage
@@ -49,6 +49,11 @@ bool MainController::getFlipPt() const
 {
     return flipPt;
 }
+
+bool MainController::getResized() const
+{
+    return resized;
+}
 /**
  * @brief MainController::getFirstPoint
  * @return
@@ -63,11 +68,16 @@ QPointF MainController::getFirstPoint() const
  */
 void MainController::setPoint(const QPointF &value)
 {
-    if(!this->flipPt)
+    if(!this->flipPt){
         firstPoint = value;
-    else
+    }
+    else {
         secondPoint = value;
+    }
+    cv::Rect rec(firstPoint.x(), firstPoint.y(), abs(secondPoint.x() - firstPoint.x())+ 1, abs(secondPoint.y() - firstPoint.y()) + 1);
+    cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
 
+    this->rectangle = cv::RotatedRect(middle, rec.size(), 0);
     this->flipPoints();
 }
 /**
@@ -78,6 +88,7 @@ void MainController::loadImage(QString path)
 {
     this->srcImage = cv::imread(path.toStdString());
     this->dstImage = this->srcImage.clone();
+    this->resized = false;
 }
 /**
  * @brief MainController::saveImage
@@ -97,7 +108,8 @@ void MainController::rotateImgShifts(int degree, Interpolation::INTERPOLATIONS t
     cv::Mat img;
     img = this->getDstImage();
     cv::Point2f middle = cv::Point2f(0.5f*img.cols, 0.5f*img.rows);
-    this->dstImage = rotation->rotateShear(degree, img, type, middle);
+    this->dstImage = transformation->rotateShear(degree, img, type, middle, this->resized);
+    this->resized = true;
 }
 /**
  * @brief MainController::flipPoints
@@ -115,12 +127,34 @@ void MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type)
 {
     cv::Mat img;
     img = this->getDstImage();
-    this->dstImage = rotation->rotateShearPart(degree, img, type, firstPoint, secondPoint);
+
+    cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
+    cv::Rect rec(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
+
+    this->dstImage = transformation->rotateShearPart(degree, img, type, &rectangle, &middle);
+    this->rectangle = cv::RotatedRect(middle, rec.size(), degree);
 }
 /**
  * @brief MainController::imageReset
  */
 void MainController::imageReset()
 {
+    this->firstPoint = QPointF(0,0);
+    this->secondPoint = QPointF(0,0);
     this->dstImage = srcImage.clone();
+    this->resized = false;
+}
+/**
+ * @brief MainController::scaleImg
+ * @param times
+ */
+void MainController::scaleImg(float times)
+{
+    cv::Mat img;
+    img = this->getDstImage();
+    this->dstImage = transformation->scale(times, img);
+    if(times > 1.0)
+        this->resized = true;
+    else
+        this->resized = false;
 }

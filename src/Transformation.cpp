@@ -1,18 +1,16 @@
-#include "headers/Rotation.h"
+#include "headers/Transformation.h"
 #include <QDebug>
-Rotation::Rotation()
+Transformation::Transformation()
 {
     this->interpolation = new Interpolation();
 }
 /**
- * @brief Rotation::rotateShear
+ * @brief Transformation::createRotateShearMatrix
  * @param degree
- * @param img
- * @param type
  * @param middle
  * @return
  */
-cv::Mat Rotation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle)
+cv::Mat Transformation::createRotateShearMatrix(int degree, cv::Point2f middle)
 {
     double rad;
     double alpha, beta;
@@ -21,7 +19,7 @@ cv::Mat Rotation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLA
     cv::Mat shearX = cv::Mat::eye(3, 3, CV_32FC1);
     cv::Mat shearY = cv::Mat::eye(3, 3, CV_32FC1);
     cv::Mat translate = cv::Mat::eye(3, 3, CV_32FC1);
-    cv::Mat result;
+
 
     rad = degree*(CV_PI/180.f);
     alpha = -tan(rad/2.0);
@@ -40,9 +38,34 @@ cv::Mat Rotation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLA
     // rotation is equal to shearX * shearY * shearX
     M = translate.inv() * (shearX *(shearY * (shearX * translate)));
 
-    this->interpolate(type, img, result, M);
+    return M;
+}
+/**
+ * @brief Rotation::rotateShear
+ * @param degree
+ * @param img
+ * @param type
+ * @param middle
+ * @return
+ */
+cv::Mat Transformation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle, bool resized)
+{
+    cv::Mat result, M;
 
-    cv::imwrite("obrazok.png", result);
+    M = this->createRotateShearMatrix(degree, middle);
+
+    if(!resized){
+        cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), img.size(), degree).boundingRect2f();
+        M.at<float>(1,2) += bbox.width/2.0 - img.cols/2.0;
+        M.at<float>(0,2) += bbox.height/2.0 - img.rows/2.0;
+
+        cv::Size size = bbox.size();
+        this->interpolate(type, img, result, M, size);
+    }
+    else {
+        this->interpolate(type, img, result, M, img.size());
+    }
+
     return result;
 }
 /**
@@ -54,17 +77,13 @@ cv::Mat Rotation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLA
  * @param secondPoint
  * @return
  */
-cv::Mat Rotation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, QPointF firstPoint, QPointF secondPoint)
+cv::Mat Transformation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::RotatedRect * rectangle, cv::Point2f * middle)
 {
     cv::Mat imgTmp, imgSmall, rotated;
     cv::Vec3b whiteColor;
 
     imgTmp = img.clone();
     imgSmall = img.clone();
-    cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
-
-    //crop image
-     cv::Rect rectangle(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
 
     //white color
     whiteColor.val[0] = 0;
@@ -75,12 +94,12 @@ cv::Mat Rotation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTER
         for(int y=0; y<imgTmp.cols; y++)
             // crop rectangle-> in original cut rectangle
             // -> in rotated one white out rest out of rectangle
-            if(rectangle.contains(cv::Point(x,y)))
+            if(rectangle->boundingRect().contains(cv::Point(y, x)))
                 imgTmp.at<cv::Vec3b>(x,y) = whiteColor;
             else
                 imgSmall.at<cv::Vec3b>(x,y) = whiteColor;
 
-    rotated = this->rotateShear(degree, imgSmall, type, middle);
+    rotated = this->rotateShear(degree, imgSmall, type, *middle, true);
 
     for(int x=0; x<rotated.rows; x++)
         for(int y=0; y<rotated.cols; y++)
@@ -90,18 +109,37 @@ cv::Mat Rotation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTER
 
     return imgTmp;
 }
+
+cv::Mat Transformation::scale(float times, cv::Mat &img)
+{
+    cv::Mat scaleMatrix, scaled;
+    cv::Size size;
+    scaleMatrix = cv::Mat::eye(2, 3, CV_32FC1);
+
+    scaleMatrix.at<float>(0,0) = times;
+    scaleMatrix.at<float>(1,1) = times;
+
+    if(times>1)
+        size =  img.size() * 2;
+    else
+        size = img.size() / 2;
+
+    cv::warpAffine(img, scaled, scaleMatrix, size);
+    return scaled;
+}
 /**
  * @brief Rotation::interpolate
  * @param type
  * @param img
  * @param result
  * @param M
+ * @param size
  */
-void Rotation::interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M)
+void Transformation::interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M, cv::Size size)
 {
     switch (type) {
     case Interpolation::INTERPOLATIONS::nearest:
-        this->interpolation->NearestNeighbor(img, result, M);
+        this->interpolation->NearestNeighbor(img, result, M, size);
         break;
 
     case Interpolation::INTERPOLATIONS::bilinear:

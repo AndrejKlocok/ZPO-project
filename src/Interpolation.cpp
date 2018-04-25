@@ -10,14 +10,14 @@ Interpolation::Interpolation()
  * @param dst
  * @param transformation
  */
-void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation)
+void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size)
 {
     float xn, yn;
     cv::Mat T = transformation.inv();
-    dst = cv::Mat::zeros(src.size(), src.type());
+    dst = cv::Mat::zeros(size, src.type());
 
-    for( int x=0; x<src.rows -1;x++){
-        for(int y=0; y<src.cols -1; y++){
+    for( int x=0; x<size.height;x++){
+        for(int y=0; y<size.width; y++){
             xn = x*T.at<float>(0,0) + y*T.at<float>(0,1) + T.at<float>(0,2);
             yn = x*T.at<float>(1,0) + y*T.at<float>(1,1) + T.at<float>(1,2);
 

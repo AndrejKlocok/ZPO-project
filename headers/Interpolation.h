@@ -13,7 +13,7 @@ class Interpolation
 public:
     enum INTERPOLATIONS {nearest, bilinear, bicubic};
     Interpolation();
-    void NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation);
+    void NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size);
     void Bilinear(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation);
     void Bicubic(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation);
 };

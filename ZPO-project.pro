@@ -29,8 +29,8 @@ SOURCES += \
     src/Adapter.cpp \
     src/MainWindow.cpp \
     src/ImageGraphicsView.cpp \
-    src/Rotation.cpp \
-    src/Interpolation.cpp
+    src/Interpolation.cpp \
+    src/Transformation.cpp
 
 unix:!mac {
     message("* Using settings for Unix/Linux.")
@@ -49,8 +49,8 @@ HEADERS += \
     headers/MainController.h \
     headers/Adapter.h \
     headers/ImageGraphicsView.h \
-    headers/Rotation.h \
-    headers/Interpolation.h
+    headers/Interpolation.h \
+    headers/Transformation.h
 
 FORMS += \
         ui/mainwindow.ui
