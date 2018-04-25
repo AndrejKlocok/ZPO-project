@@ -7,6 +7,9 @@
 #include <QGraphicsScene>
 #include <QMouseEvent>
 
+/**
+ * @brief The ImageGraphicsView class
+ */
 class ImageGraphicsView : public QGraphicsView
 {
     Q_OBJECT

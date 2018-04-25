@@ -4,7 +4,12 @@ Interpolation::Interpolation()
 {
 
 }
-
+/**
+ * @brief Interpolation::NearestNeighbor
+ * @param src
+ * @param dst
+ * @param transformation
+ */
 void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation)
 {
     float xn, yn;
@@ -23,7 +28,12 @@ void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transfo
     }
 
 }
-
+/**
+ * @brief Interpolation::Bilinear
+ * @param src
+ * @param dst
+ * @param transformation
+ */
 void Interpolation::Bilinear(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation)
 {
     // float xn, yn;
@@ -31,7 +41,12 @@ void Interpolation::Bilinear(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation
     dst = cv::Mat::zeros(src.size(), src.type());
 
 }
-
+/**
+ * @brief Interpolation::Bicubic
+ * @param src
+ * @param dst
+ * @param transformation
+ */
 void Interpolation::Bicubic(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation)
 {
     //float xn, yn;

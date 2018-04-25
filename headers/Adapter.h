@@ -4,7 +4,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <QPixmap>
-
+/**
+ * @brief The Adapter class
+ */
 class Adapter
 {
 public:

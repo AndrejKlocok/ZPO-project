@@ -4,7 +4,14 @@ Rotation::Rotation()
 {
     this->interpolation = new Interpolation();
 }
-
+/**
+ * @brief Rotation::rotateShear
+ * @param degree
+ * @param img
+ * @param type
+ * @param middle
+ * @return
+ */
 cv::Mat Rotation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle)
 {
     double rad;
@@ -38,7 +45,15 @@ cv::Mat Rotation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLA
     cv::imwrite("obrazok.png", result);
     return result;
 }
-
+/**
+ * @brief Rotation::rotateShearPart
+ * @param degree
+ * @param img
+ * @param type
+ * @param firstPoint
+ * @param secondPoint
+ * @return
+ */
 cv::Mat Rotation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, QPointF firstPoint, QPointF secondPoint)
 {
     cv::Mat imgTmp, imgSmall, rotated;
@@ -65,11 +80,7 @@ cv::Mat Rotation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTER
             else
                 imgSmall.at<cv::Vec3b>(x,y) = whiteColor;
 
-    //rotate
-    //rotationMatrix = cv::getRotationMatrix2D(middle, (double) degree, 1.0);
-    //get center of rotation
     rotated = this->rotateShear(degree, imgSmall, type, middle);
-    //cv::warpAffine(imgSmall, rotated, rotationMatrix, imgSmall.size(), cv::INTER_CUBIC , cv::BORDER_CONSTANT, cv::Scalar::all(0));
 
     for(int x=0; x<rotated.rows; x++)
         for(int y=0; y<rotated.cols; y++)
@@ -79,7 +90,13 @@ cv::Mat Rotation::rotateShearPart(int degree, cv::Mat &img, Interpolation::INTER
 
     return imgTmp;
 }
-
+/**
+ * @brief Rotation::interpolate
+ * @param type
+ * @param img
+ * @param result
+ * @param M
+ */
 void Rotation::interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M)
 {
     switch (type) {

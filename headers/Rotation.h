@@ -8,6 +8,9 @@
 #include<QObject>
 #include<QPixmap>
 
+/**
+ * @brief The Rotation class
+ */
 class Rotation
 {
 public:

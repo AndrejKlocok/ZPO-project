@@ -1,5 +1,9 @@
 #include "../headers/Adapter.h"
-
+/**
+ * @brief Adapter::convertMatToQPixmap
+ * @param img
+ * @return
+ */
 QPixmap Adapter::convertMatToQPixmap(cv::Mat img)
 {
     cv::Mat newImg;
@@ -8,7 +12,9 @@ QPixmap Adapter::convertMatToQPixmap(cv::Mat img)
     return QPixmap::fromImage(QImage(newImg.data, newImg.cols, newImg.rows, newImg.step,
                                      QImage::Format_RGB888));
 }
-
+/**
+ * @brief Adapter::Adapter
+ */
 Adapter::Adapter()
 {
 

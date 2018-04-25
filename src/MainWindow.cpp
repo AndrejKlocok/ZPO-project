@@ -1,7 +1,10 @@
 #include "../headers/MainWindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -13,12 +16,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->centralWidget->setMouseTracking(true);
 }
-
+/**
+ * @brief MainWindow::~MainWindow
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
+/**
+ * @brief MainWindow::setUpSingnals
+ */
 void MainWindow::setUpSingnals()
 {
     //onClicks
@@ -34,7 +41,10 @@ void MainWindow::setUpSingnals()
     //onMouseClicked
     connect(ui->srcImageView, SIGNAL(sendMousePoint(QPointF)), this, SLOT(setMousePoint(QPointF)));
 }
-
+/**
+ * @brief MainWindow::displayImage
+ * @param img
+ */
 void MainWindow::displayImage(cv::Mat img)
 {
     scene = new QGraphicsScene(this);
@@ -44,7 +54,9 @@ void MainWindow::displayImage(cv::Mat img)
 
     adjustSize();
 }
-
+/**
+ * @brief MainWindow::onLoadImageClick
+ */
 void MainWindow::onLoadImageClick()
 {
     // choose file
@@ -60,7 +72,9 @@ void MainWindow::onLoadImageClick()
     //print
     displayImage(controler->getSrcImage());
 }
-
+/**
+ * @brief MainWindow::onSaveImageClick
+ */
 void MainWindow::onSaveImageClick()
 {
     // choose file
@@ -75,7 +89,9 @@ void MainWindow::onSaveImageClick()
         QMessageBox::information(this,tr("Error"), tr("Unable to save file") );
     }
 }
-
+/**
+ * @brief MainWindow::onRotateImageRowsClick
+ */
 void MainWindow::onRotateImageRowsClick()
 {
     try{        
@@ -96,7 +112,9 @@ void MainWindow::onRotateImageRowsClick()
     }
 
 }
-
+/**
+ * @brief MainWindow::onReloadBtnClick
+ */
 void MainWindow::onReloadBtnClick()
 {
     try{
@@ -109,7 +127,9 @@ void MainWindow::onReloadBtnClick()
     }
 
 }
-
+/**
+ * @brief MainWindow::onRotatePartClick
+ */
 void MainWindow::onRotatePartClick()
 {
     try{
@@ -130,12 +150,18 @@ void MainWindow::onRotatePartClick()
         QMessageBox::information(this,tr("Error"), tr("Mark the area") );
     }
 }
-
+/**
+ * @brief MainWindow::onSliderValChanged
+ * @param val
+ */
 void MainWindow::onSliderValChanged(int val)
 {
     ui->SliderValue->setText("degrees: "+QString::number(val)+"°");
 }
-
+/**
+ * @brief MainWindow::setMousePoint
+ * @param point
+ */
 void MainWindow::setMousePoint(QPointF point)
 {
     bool pt = controler->getFlipPt();
@@ -146,7 +172,9 @@ void MainWindow::setMousePoint(QPointF point)
 
     controler->setPoint(point);
 }
-
+/**
+ * @brief MainWindow::adjustWindowSize
+ */
 void MainWindow::adjustWindowSize()
 {
     adjustSize();

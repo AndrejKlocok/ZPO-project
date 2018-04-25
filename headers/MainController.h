@@ -12,6 +12,9 @@
 #include "../headers/Adapter.h"
 #include "../headers/Rotation.h"
 
+/**
+ * @brief The MainController class
+ */
 class MainController
 {
 public:
