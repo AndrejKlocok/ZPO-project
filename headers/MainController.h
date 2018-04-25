@@ -18,9 +18,9 @@ public:
     MainController();
     void loadImage(QString path);
     void saveImage(QString path);
-    void rotateImgShifts(int degree);
+    void rotateImgShifts(int degree, Interpolation::INTERPOLATIONS type);
     void flipPoints();
-    void rotatePart(int degree);
+    void rotatePart(int degree, Interpolation::INTERPOLATIONS type);
     void imageReset();
 
     cv::Mat getSrcImage();

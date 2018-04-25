@@ -249,13 +249,6 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QRadioButton" name="radioSpline">
-            <property name="text">
-             <string>Spline interpolation</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>

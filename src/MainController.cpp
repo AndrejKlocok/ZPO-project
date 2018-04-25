@@ -61,11 +61,12 @@ void MainController::saveImage(QString path)
     cv::imwrite(path.toStdString(),this->dstImage);
 }
 
-void MainController::rotateImgShifts(int degree)
+void MainController::rotateImgShifts(int degree, Interpolation::INTERPOLATIONS type)
 {
     cv::Mat img;
     img = this->getDstImage();
-    this->dstImage = rotation->rotateShear(degree, img);
+    cv::Point2f middle = cv::Point2f(0.5f*img.cols, 0.5f*img.rows);
+    this->dstImage = rotation->rotateShear(degree, img, type, middle);
 }
 
 void MainController::flipPoints()
@@ -73,49 +74,11 @@ void MainController::flipPoints()
     this->flipPt= !flipPt;
 }
 
-void MainController::rotatePart(int degree)
+void MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type)
 {
-    cv::Point2f middle;
-    cv::Mat rotationMatrix, imgTmp, imgSmall, rotated;
-    cv::Vec3b whiteColor;
-
-    imgTmp = getDstImage().clone();
-    imgSmall = getDstImage().clone();
-
-    middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
-
-
-    //crop image
-     cv::Rect rectangle(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
-
-    //white color
-    whiteColor.val[0] = 0;
-    whiteColor.val[1] = 0;
-    whiteColor.val[2] = 0;
-
-    for(int x=0; x<imgTmp.rows; x++)
-        for(int y=0; y<imgTmp.cols; y++)
-            // crop rectangle-> in original cut rectangle
-            // -> in rotated one white out rest out of rectangle
-            if(rectangle.contains(cv::Point(x,y)))
-                imgTmp.at<cv::Vec3b>(x,y) = whiteColor;
-            else
-                imgSmall.at<cv::Vec3b>(x,y) = whiteColor;
-
-    //rotate
-    //rotationMatrix = cv::getRotationMatrix2D(middle, (double) degree, 1.0);
-    //get center of rotation
-    rotated = rotation->rotateShear(degree, imgSmall);
-    //cv::warpAffine(imgSmall, rotated, rotationMatrix, imgSmall.size(), cv::INTER_CUBIC , cv::BORDER_CONSTANT, cv::Scalar::all(0));
-
-    for(int x=0; x<rotated.rows; x++)
-        for(int y=0; y<rotated.cols; y++)
-            // if pixel in croped image isnt white -> coppy
-            if(rotated.at<cv::Vec3b>(x,y)!= whiteColor)
-                imgTmp.at<cv::Vec3b>(x,y) = rotated.at<cv::Vec3b>(x,y);
-
-
-    this->dstImage = imgTmp;
+    cv::Mat img;
+    img = this->getDstImage();
+    this->dstImage = rotation->rotateShearPart(degree, img, type, firstPoint, secondPoint);
 }
 
 void MainController::imageReset()

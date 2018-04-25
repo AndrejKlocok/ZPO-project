@@ -78,8 +78,16 @@ void MainWindow::onSaveImageClick()
 
 void MainWindow::onRotateImageRowsClick()
 {
-    try{
-        controler->rotateImgShifts(ui->degreeSlider->value());
+    try{        
+        if(ui->radioNearest->isChecked()){
+            controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::nearest);
+        }
+        else if(ui->radioBilinear->isChecked()){
+            controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bilinear);
+        }
+        else {
+            controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bicubic);
+        }
 
         displayImage(controler->getDstImage());
     }
@@ -105,7 +113,17 @@ void MainWindow::onReloadBtnClick()
 void MainWindow::onRotatePartClick()
 {
     try{
-        controler->rotatePart(ui->degreeSlider->value());
+        if(ui->radioNearest->isChecked()){
+            controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::nearest);
+        }
+        else if(ui->radioBilinear->isChecked()){
+            controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bilinear);
+        }
+        else {
+            controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bicubic);
+        }
+
+        //controler->rotatePart(ui->degreeSlider->value());
         displayImage(controler->getDstImage());
     }
     catch (std::exception e){
