@@ -143,11 +143,11 @@ void Transformation::interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &im
         break;
 
     case Interpolation::INTERPOLATIONS::bilinear:
-        this->interpolation->Bilinear(img, result, M);
+        this->interpolation->Bilinear(img, result, M,size);
         break;
 
     case Interpolation::INTERPOLATIONS::bicubic:
-        this->interpolation->Bicubic(img, result, M);
+        this->interpolation->Bicubic(img, result, M, size);
         break;
 
     default:

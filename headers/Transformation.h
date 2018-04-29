@@ -3,7 +3,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <../headers/Interpolation.h>
+#include <./headers/Interpolation.h>
 
 #include<QObject>
 #include<QPixmap>
