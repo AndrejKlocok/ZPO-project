@@ -21,9 +21,9 @@ public:
     MainController();
     void loadImage(QString path);
     void saveImage(QString path);
-    void rotateImgShifts(int degree, Interpolation::INTERPOLATIONS type);
+    void rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
     void flipPoints();
-    void rotatePart(int degree, Interpolation::INTERPOLATIONS type);
+    void rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
     void imageReset();
     void scaleImg(float times);
 
@@ -49,6 +49,8 @@ private:
     bool flipPt=false;  //flip first and second point of rectangle
     Transformation *transformation;
     bool resized=false;
+
+
 };
 
 #endif // MAINCONTROLLER_H

@@ -113,14 +113,14 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch=""/>
+         <layout class="QHBoxLayout" name="horizontalLayout_4"/>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,3,3">
+       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="2,2,1">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_14">
+         <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
            <widget class="QPushButton" name="btnRotateRows">
             <property name="minimumSize">
@@ -140,10 +140,6 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
            <widget class="QPushButton" name="btnRotatePart">
             <property name="minimumSize">
@@ -161,6 +157,29 @@
             <property name="text">
              <string>RotatePart</string>
             </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioRotateNormal">
+            <property name="text">
+             <string>RotateNormal</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioRotateShear">
+            <property name="text">
+             <string>RadioRotateShear</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
            </widget>
           </item>
           <item>
@@ -237,7 +256,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="slidetVertLayout" stretch="2,1">
+         <layout class="QVBoxLayout" name="slidetVertLayout" stretch="1,1">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_16">
             <item>
@@ -248,13 +267,13 @@
                  <widget class="QPushButton" name="btnZoomIn">
                   <property name="minimumSize">
                    <size>
-                    <width>50</width>
+                    <width>60</width>
                     <height>30</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>50</width>
+                    <width>60</width>
                     <height>30</height>
                    </size>
                   </property>
@@ -271,7 +290,7 @@
                  <widget class="QPushButton" name="btnZoomOut">
                   <property name="minimumSize">
                    <size>
-                    <width>50</width>
+                    <width>60</width>
                     <height>30</height>
                    </size>
                   </property>
@@ -391,4 +410,7 @@
  </customwidgets>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 /**
- * @brief MainWindow::setUpSingnals
+ * @brief MainWindow::setUpSingnals - Metoda inicializuje signaly, s ktorymi pracuje okno.
  */
 void MainWindow::setUpSingnals()
 {
@@ -43,8 +43,8 @@ void MainWindow::setUpSingnals()
     connect(ui->srcImageView, SIGNAL(sendMousePoint(QPointF)), this, SLOT(setMousePoint(QPointF)));
 }
 /**
- * @brief MainWindow::displayImage
- * @param img
+ * @brief MainWindow::displayImage  - Metoda zaistuje zobrazenie obrazku na View v okne.
+ * @param img   - obrazok
  */
 void MainWindow::displayImage(cv::Mat img, bool setSize)
 {
@@ -57,33 +57,37 @@ void MainWindow::displayImage(cv::Mat img, bool setSize)
     adjustSize();
 }
 /**
- * @brief MainWindow::onLoadImageClick
+ * @brief MainWindow::onLoadImageClick  - Osetrenie eventu na nacitanie obrazka.
  */
 void MainWindow::onLoadImageClick()
 {
-    // choose file
+    /*  Zvolenie suboru */
     QString filename = QFileDialog::getOpenFileName(this, tr("Select Image"), "",
                                  tr("Image Files (*.png *.jpg);;All files (*.*)"));
+    /*  Osetrenie vstupu */
     if(filename.isEmpty()){
         return ;
     }
 
-    //load image
+    /* Nacitanie obrazka    */
     controler->loadImage(filename);
 
-    //print
+    /* Zobrazenie obrazka   */
     displayImage(controler->getSrcImage(), true);
 }
 /**
- * @brief MainWindow::onSaveImageClick
+ * @brief MainWindow::onSaveImageClick  - Osetrenie eventu na ulozenie obrazka.
  */
 void MainWindow::onSaveImageClick()
 {
-    // choose file
+    /*  Zvolenie suboru */
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Image"), "",
                                  tr("Image Files (*.png *.jpg)"));
+    /*  Osetrenie vstupu */
     if(filename.isEmpty())
         return;
+
+    /* Ulozenie obrazka */
     try{
         controler->saveImage(filename);
     }
@@ -92,22 +96,21 @@ void MainWindow::onSaveImageClick()
     }
 }
 /**
- * @brief MainWindow::onRotateImageRowsClick
+ * @brief MainWindow::onRotateImageRowsClick - Osetrenie eventu kliku na rotaciu skosenim
  */
 void MainWindow::onRotateImageRowsClick()
 {
     try{
-        this->checkZoom();
-        if(ui->radioNearest->isChecked()){
-            controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::nearest);
-        }
-        else if(ui->radioBilinear->isChecked()){
-            controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bilinear);
-        }
-        else {
-            controler->rotateImgShifts(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bicubic);
-        }
+        Interpolation::INTERPOLATIONS type;
+        Transformation::ROTATIONS rotate;
 
+        /*  Osetrenie priblizeneho obrazka  */
+        this->checkZoom();        
+        /*  Skontrolovanie moznosti radiobutonov */
+        this->checkOptions(&type, &rotate);
+        /* Prevedenie rotacie */
+        controler->rotateImg(ui->degreeSlider->value(), type, rotate);
+        /* Zobrazenie obrazka */
         displayImage(controler->getDstImage(), true);
     }
     catch (std::exception e){
@@ -117,14 +120,18 @@ void MainWindow::onRotateImageRowsClick()
 
 }
 /**
- * @brief MainWindow::onReloadBtnClick
+ * @brief MainWindow::onReloadBtnClick  - Osetrenie eventu obnovenia obrazka do povodneho stavu
  */
 void MainWindow::onReloadBtnClick()
 {
     try{
+        /*  Zoom    */
         this->zoomCnt = 0;
+        /* Zobrazenie povodneho obrazku */
         displayImage(controler->getSrcImage(), true);
+        /* Resetovanie kontrolera */
         controler->imageReset();
+        /* Resetovanie UI   */
         this->setScrollBars(false);
          ui->labelPointOne->setText("Point One: x: 0 y:0");
          ui->labelPointTwo->setText("Point One: x: 0 y:0");
@@ -135,29 +142,30 @@ void MainWindow::onReloadBtnClick()
 
 }
 /**
- * @brief MainWindow::onRotatePartClick
+ * @brief MainWindow::onRotatePartClick - Osetrenie eventu kliku na ciastocnu rotaciu
  */
 void MainWindow::onRotatePartClick()
 {
     try{
-        this->checkZoom();
-        if(ui->radioNearest->isChecked()){
-            controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::nearest);
-        }
-        else if(ui->radioBilinear->isChecked()){
-            controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bilinear);
-        }
-        else {
-            controler->rotatePart(ui->degreeSlider->value(), Interpolation::INTERPOLATIONS::bicubic);
-        }
+        Interpolation::INTERPOLATIONS type;
+        Transformation::ROTATIONS rotate;
 
+        /*  Osetrenie priblizeneho obrazka  */
+        this->checkZoom();
+        /*  Skontrolovanie moznosti radiobutonov */
+        this->checkOptions(&type, &rotate);
+        /* Prevedenie rotacie */
+        controler->rotatePart(ui->degreeSlider->value(), type, rotate);
+        /* Zobrazenie obrazka */
         displayImage(controler->getDstImage(), true);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Mark the area") );
     }
 }
-
+/**
+ * @brief MainWindow::onZoomInClick - Priblizenie obrazka
+ */
 void MainWindow::onZoomInClick()
 {
     try{
@@ -170,7 +178,9 @@ void MainWindow::onZoomInClick()
         QMessageBox::information(this,tr("Error"), tr("Unable to scale image") );
     }
 }
-
+/**
+ * @brief MainWindow::onZoomOutClick - Oddialenie obrazka
+ */
 void MainWindow::onZoomOutClick()
 {
     try{
@@ -183,7 +193,10 @@ void MainWindow::onZoomOutClick()
         QMessageBox::information(this,tr("Error"), tr("Unable to scale image") );
     }
 }
-
+/**
+ * @brief MainWindow::setScrollBars - Upravenie scroll barov
+ * @param value - boolean, na zaklade ktoreho sa scrollbary zobrazia
+ */
 void MainWindow::setScrollBars(bool value)
 {
     if(value){
@@ -195,7 +208,9 @@ void MainWindow::setScrollBars(bool value)
         ui->srcImageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
 }
-
+/**
+ * @brief MainWindow::checkZoom - Osetrenie priblizenia
+ */
 void MainWindow::checkZoom()
 {
     if(this->zoomCnt != 0){
@@ -203,20 +218,49 @@ void MainWindow::checkZoom()
     }
 }
 /**
- * @brief MainWindow::onSliderValChanged
- * @param val
+ * @brief MainWindow::checkOptions  - Zistenie moznosti z poli radiobutonov
+ * @param type      - typ interpolacie
+ * @param rotations - typ rotacie
+ */
+void MainWindow::checkOptions(Interpolation::INTERPOLATIONS *type, Transformation::ROTATIONS *rotations)
+{
+    /* Zistenie interpolacie */
+    if(ui->radioNearest->isChecked()){
+        *type = Interpolation::INTERPOLATIONS::nearest;
+    }
+    else if(ui->radioBilinear->isChecked()){
+        *type = Interpolation::INTERPOLATIONS::bilinear;
+    }
+    else {
+        *type = Interpolation::INTERPOLATIONS::bicubic;
+    }
+
+    /* Zistenie typu rotacie */
+    if(ui->radioRotateNormal->isChecked()){
+        *rotations = Transformation::ROTATIONS::normal;
+    }
+    else {
+        *rotations = Transformation::ROTATIONS::shear;
+    }
+
+}
+/**
+ * @brief MainWindow::onSliderValChanged - Zapisanie hodnoty slideru do navestia
+ * @param val   - hodnota
  */
 void MainWindow::onSliderValChanged(int val)
 {
     ui->SliderValue->setText("degrees: "+QString::number(val)+"°");
 }
 /**
- * @brief MainWindow::setMousePoint
- * @param point
+ * @brief MainWindow::setMousePoint - Event kliku na obrazok
+ * @param point - suradnice bodu kliku na obrazok
  */
 void MainWindow::setMousePoint(QPointF point)
 {
     bool pt = controler->getFlipPt();
+
+    /* Jeden bod z mysleneho obdlznika */
     if(!pt)
         ui->labelPointOne->setText("Point One: x:"+ QString::number(point.x()) +" y:" + QString::number(point.y()));
     else
@@ -225,7 +269,7 @@ void MainWindow::setMousePoint(QPointF point)
     controler->setPoint(point);
 }
 /**
- * @brief MainWindow::adjustWindowSize
+ * @brief MainWindow::adjustWindowSize  - Obdnovenie velkosti okna na zaklade velkosti jednotlivych widgetov
  */
 void MainWindow::adjustWindowSize()
 {

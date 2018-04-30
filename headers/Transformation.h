@@ -9,18 +9,22 @@
 #include<QPixmap>
 
 /**
- * @brief The Rotation class
+ * @brief The Transformation class
  */
 class Transformation
 {
 public:
+    enum ROTATIONS {normal, shear};
     Transformation();
-    cv::Mat createRotateShearMatrix(int degree, cv::Point2f middle);
     cv::Mat rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle, bool resized);
-    cv::Mat rotateShearPart(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::RotatedRect *rectangle, cv::Point2f *middle);
+    cv::Mat rotatePart(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::RotatedRect *rectangle, cv::Point2f *middle, ROTATIONS rotate);
+    cv::Mat rotateNormal(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle, bool resized);
     cv::Mat scale(float times, cv::Mat &img);
-    void interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M, cv::Size size);
 
+private:
+    void interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M, cv::Size size);
+    cv::Mat createRotateShearMatrix(int degree, cv::Point2f middle);
+    void adjustSize(cv::Mat &result, cv::Mat &M, cv::Mat &img, int degree, Interpolation::INTERPOLATIONS type, bool resized);
 
 private:
     Interpolation *interpolation;

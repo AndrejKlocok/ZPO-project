@@ -62,9 +62,9 @@ QPointF MainController::getFirstPoint() const
 {
     return firstPoint;
 }
-/** According to flipPt bool value (false -> sets firstPoint, true-> sets secondPoint)
- * @brief MainController::setPoint
- * @param value
+/**
+ * @brief MainController::setPoint  - Metoda prideluje bod obdlznikoveho vyrezu na zaklade bool flipP
+ * @param value - aktualne bod
  */
 void MainController::setPoint(const QPointF &value)
 {
@@ -74,15 +74,17 @@ void MainController::setPoint(const QPointF &value)
     else {
         secondPoint = value;
     }
+
     cv::Rect rec(firstPoint.x(), firstPoint.y(), abs(secondPoint.x() - firstPoint.x())+ 1, abs(secondPoint.y() - firstPoint.y()) + 1);
     cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
 
+    /* Vytvorenie vyrezu    */
     this->rectangle = cv::RotatedRect(middle, rec.size(), 0);
     this->flipPoints();
 }
 /**
- * @brief MainController::loadImage
- * @param path
+ * @brief MainController::loadImage - Nacitanie obrazka.
+ * @param path  - cesta k obrazku
  */
 void MainController::loadImage(QString path)
 {
@@ -91,51 +93,70 @@ void MainController::loadImage(QString path)
     this->resized = false;
 }
 /**
- * @brief MainController::saveImage
- * @param path
+ * @brief MainController::saveImage - Ulozenie obrazka
+ * @param path  - cesta k obrazku
  */
 void MainController::saveImage(QString path)
 {
     cv::imwrite(path.toStdString(),this->dstImage);
 }
 /**
- * @brief MainController::rotateImgShifts
- * @param degree
- * @param type
+ * @brief MainController::rotateImg - Metoda sluzi na rotovanie obrazka
+ * @param degree    - uhol rotacie
+ * @param type      - typ interpolacie
+ * @param rotate    - typ rotacie
  */
-void MainController::rotateImgShifts(int degree, Interpolation::INTERPOLATIONS type)
+void MainController::rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
 {
     cv::Mat img;
     img = this->getDstImage();
+
+    /*  Vytvorenie stredu rotacie   */
     cv::Point2f middle = cv::Point2f(0.5f*img.cols, 0.5f*img.rows);
-    this->dstImage = transformation->rotateShear(degree, img, type, middle, this->resized);
+
+    /*  Na zaklade typu rotacie volam metodu z moznosti */
+    switch (rotate) {
+    case Transformation::ROTATIONS::normal:
+        this->dstImage = transformation->rotateNormal(degree, img, type, middle, this->resized);
+        break;
+    case Transformation::ROTATIONS::shear:
+        this->dstImage = transformation->rotateShear(degree, img, type, middle, this->resized);
+        break;
+    default:
+        break;
+    }
+    /*  Aplikovane zvacsenia    */
     this->resized = true;
 }
 /**
- * @brief MainController::flipPoints
+ * @brief MainController::flipPoints - Otocenie bodov reprezentujucich obdlznikovy vyrez
  */
 void MainController::flipPoints()
 {
     this->flipPt= !flipPt;
 }
 /**
- * @brief MainController::rotatePart
- * @param degree
- * @param type
+ * @brief MainController::rotatePart - Metoda rotuje vyrez urceny obldznikom.
+ * @param degree    - uhol rotacie
+ * @param type      - typ interpolacie
+ * @param rotate    - typ rotacie
  */
-void MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type)
+void MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
 {
     cv::Mat img;
     img = this->getDstImage();
-
+    /*  Zistenie sterdu */
     cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
-    cv::Rect rec(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
 
-    this->dstImage = transformation->rotateShearPart(degree, img, type, &rectangle, &middle);
+    /*  Rotacia */
+    this->dstImage = transformation->rotatePart(degree, img, type, &rectangle, &middle, rotate);
+
+    /* Uprava vyrezu    */
+    cv::Rect rec(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
     this->rectangle = cv::RotatedRect(middle, rec.size(), degree);
 }
 /**
- * @brief MainController::imageReset
+ * @brief MainController::imageReset - Obdnovenie obrazka do povodneho stavu.
  */
 void MainController::imageReset()
 {
@@ -145,14 +166,16 @@ void MainController::imageReset()
     this->resized = false;
 }
 /**
- * @brief MainController::scaleImg
- * @param times
+ * @brief MainController::scaleImg  - Skalovanie obrazka
+ * @param times - nasobnost
  */
 void MainController::scaleImg(float times)
 {
     cv::Mat img;
     img = this->getDstImage();
+    /*  Volanie prislusnej transformacie*/
     this->dstImage = transformation->scale(times, img);
+    /*  Korekcia    */
     if(times > 1.0)
         this->resized = true;
     else

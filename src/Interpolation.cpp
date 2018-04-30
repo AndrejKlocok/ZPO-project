@@ -5,10 +5,11 @@ Interpolation::Interpolation()
 
 }
 /**
- * @brief Interpolation::NearestNeighbor
- * @param src
- * @param dst
- * @param transformation
+ * @brief Interpolation::NearestNeighbor - Interpolacia metodou najblizsieho suseda v mriezke bodov
+ * @param src               - vstupny obrazok
+ * @param dst               - vystupny obrazok
+ * @param transformation    - transformacna matica
+ * @param size              - velkost vystupneho obrazka
  */
 void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size)
 {
@@ -21,8 +22,10 @@ void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transfo
             xn = x*T.at<float>(0,0) + y*T.at<float>(0,1) + T.at<float>(0,2);
             yn = x*T.at<float>(1,0) + y*T.at<float>(1,1) + T.at<float>(1,2);
 
+            // osetrenie krajnych hodnot
             if(xn < 0 || xn >= src.rows || yn < 0 || yn >= src.cols)
                 continue;
+
             dst.at<cv::Vec3b>(x, y) = src.at<cv::Vec3b>(cvRound(xn), cvRound(yn));
         }
     }
@@ -33,6 +36,7 @@ void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transfo
  * @param src
  * @param dst
  * @param transformation
+ * @param size
  */
 void Interpolation::Bilinear(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size)
 {
@@ -98,6 +102,7 @@ float Interpolation::cubicInterpolateRow (float p0, float p1, float p2, float p3
  * @param src
  * @param dst
  * @param transformation
+ * @param size
  */
 void Interpolation::Bicubic(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size)
 {

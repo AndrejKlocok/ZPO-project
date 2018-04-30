@@ -8,11 +8,10 @@
 ImageGraphicsView::ImageGraphicsView(QWidget *parent):
     QGraphicsView(parent)
 {
-    //scene = new QGraphicsScene();
 }
 /**
- * @brief ImageGraphicsView::mousePressEvent
- * @param e
+ * @brief ImageGraphicsView::mousePressEvent - Event zachitavajuci klik na View
+ * @param e - event
  */
 void ImageGraphicsView::mousePressEvent(QMouseEvent *e)
 {

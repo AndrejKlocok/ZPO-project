@@ -39,6 +39,7 @@ private:
     void onZoomOutClick();
     void setScrollBars(bool value);
     void checkZoom();
+    void checkOptions(Interpolation::INTERPOLATIONS *type, Transformation::ROTATIONS *rotations);
 
     MainController *controler;
     Ui::MainWindow *ui;
