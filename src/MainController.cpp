@@ -106,13 +106,16 @@ void MainController::saveImage(QString path)
  * @param type      - typ interpolacie
  * @param rotate    - typ rotacie
  */
-void MainController::rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
+qint64 MainController::rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
 {
+    QElapsedTimer timer;
     cv::Mat img;
     img = this->getDstImage();
 
     /*  Vytvorenie stredu rotacie   */
     cv::Point2f middle = cv::Point2f(0.5f*img.cols, 0.5f*img.rows);
+    /* Spustime casovac */
+    timer.start();
 
     /*  Na zaklade typu rotacie volam metodu z moznosti */
     switch (rotate) {
@@ -127,6 +130,9 @@ void MainController::rotateImg(int degree, Interpolation::INTERPOLATIONS type, T
     }
     /*  Aplikovane zvacsenia    */
     this->resized = true;
+
+    /* Posleme vysledny cas */
+    return timer.elapsed();
 }
 /**
  * @brief MainController::flipPoints - Otocenie bodov reprezentujucich obdlznikovy vyrez
@@ -141,19 +147,25 @@ void MainController::flipPoints()
  * @param type      - typ interpolacie
  * @param rotate    - typ rotacie
  */
-void MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
+qint64 MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
 {
+    QElapsedTimer timer;
     cv::Mat img;
     img = this->getDstImage();
     /*  Zistenie sterdu */
     cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
 
+    /* Spustime casovac */
+    timer.start();
     /*  Rotacia */
     this->dstImage = transformation->rotatePart(degree, img, type, &rectangle, &middle, rotate);
 
     /* Uprava vyrezu    */
     cv::Rect rec(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
     this->rectangle = cv::RotatedRect(middle, rec.size(), degree);
+
+    /* Posleme vysledny cas */
+    return timer.elapsed();
 }
 /**
  * @brief MainController::imageReset - Obdnovenie obrazka do povodneho stavu.

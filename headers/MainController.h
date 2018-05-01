@@ -8,6 +8,7 @@
 #include<QFileDialog>
 #include<QPixmap>
 #include<QObject>
+#include<QElapsedTimer>
 
 #include "../headers/Adapter.h"
 #include "../headers/Transformation.h"
@@ -21,9 +22,9 @@ public:
     MainController();
     void loadImage(QString path);
     void saveImage(QString path);
-    void rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
+    qint64 rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
     void flipPoints();
-    void rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
+    qint64 rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
     void imageReset();
     void scaleImg(float times);
 
@@ -46,7 +47,7 @@ private:
     cv::RotatedRect rectangle;
     QPointF firstPoint = QPointF(0,0);
     QPointF secondPoint = QPointF(0,0);
-    bool flipPt=false;  //flip first and second point of rectangle
+    bool flipPt=false;
     Transformation *transformation;
     bool resized=false;
 

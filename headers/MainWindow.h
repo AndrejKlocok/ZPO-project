@@ -27,6 +27,7 @@ private slots:
     void onSliderValChanged(int val);
     void setMousePoint(QPointF point);
     void adjustWindowSize();
+
 private:
     void setUpSingnals();
     void displayImage(cv::Mat img, bool setSize);
@@ -40,6 +41,7 @@ private:
     void setScrollBars(bool value);
     void checkZoom();
     void checkOptions(Interpolation::INTERPOLATIONS *type, Transformation::ROTATIONS *rotations);
+    void setTimeLabel(qint64 time);
 
     MainController *controler;
     Ui::MainWindow *ui;

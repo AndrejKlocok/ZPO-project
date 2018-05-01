@@ -198,7 +198,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Point One: x: y:</string>
+             <string>Point One: x: 0 y: 0</string>
             </property>
            </widget>
           </item>
@@ -217,7 +217,26 @@
              </font>
             </property>
             <property name="text">
-             <string>Point Two x: y:</string>
+             <string>Point Two x: 0 y: 0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelTime">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Time: 0 ms </string>
             </property>
            </widget>
           </item>

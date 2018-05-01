@@ -41,6 +41,7 @@ void MainWindow::setUpSingnals()
 
     //onMouseClicked
     connect(ui->srcImageView, SIGNAL(sendMousePoint(QPointF)), this, SLOT(setMousePoint(QPointF)));
+
 }
 /**
  * @brief MainWindow::displayImage  - Metoda zaistuje zobrazenie obrazku na View v okne.
@@ -103,13 +104,16 @@ void MainWindow::onRotateImageRowsClick()
     try{
         Interpolation::INTERPOLATIONS type;
         Transformation::ROTATIONS rotate;
+        qint64 time;
 
         /*  Osetrenie priblizeneho obrazka  */
         this->checkZoom();        
         /*  Skontrolovanie moznosti radiobutonov */
         this->checkOptions(&type, &rotate);
         /* Prevedenie rotacie */
-        controler->rotateImg(ui->degreeSlider->value(), type, rotate);
+        time = controler->rotateImg(ui->degreeSlider->value(), type, rotate);
+        /* Zobraz cas */
+        this->setTimeLabel(time);
         /* Zobrazenie obrazka */
         displayImage(controler->getDstImage(), true);
     }
@@ -133,8 +137,9 @@ void MainWindow::onReloadBtnClick()
         controler->imageReset();
         /* Resetovanie UI   */
         this->setScrollBars(false);
-         ui->labelPointOne->setText("Point One: x: 0 y:0");
-         ui->labelPointTwo->setText("Point One: x: 0 y:0");
+        ui->labelPointOne->setText("Point One: x: 0 y: 0");
+        ui->labelPointTwo->setText("Point One: x: 0 y: 0");
+        this->setTimeLabel(0);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to reload image") );
@@ -149,13 +154,16 @@ void MainWindow::onRotatePartClick()
     try{
         Interpolation::INTERPOLATIONS type;
         Transformation::ROTATIONS rotate;
+        qint64 time;
 
         /*  Osetrenie priblizeneho obrazka  */
         this->checkZoom();
         /*  Skontrolovanie moznosti radiobutonov */
         this->checkOptions(&type, &rotate);
         /* Prevedenie rotacie */
-        controler->rotatePart(ui->degreeSlider->value(), type, rotate);
+        time = controler->rotatePart(ui->degreeSlider->value(), type, rotate);
+        /* Zobraz cas */
+        this->setTimeLabel(time);
         /* Zobrazenie obrazka */
         displayImage(controler->getDstImage(), true);
     }
@@ -245,6 +253,14 @@ void MainWindow::checkOptions(Interpolation::INTERPOLATIONS *type, Transformatio
 
 }
 /**
+ * @brief MainWindow::setTimeLabel - Zapise vysledny cas na label
+ * @param time  - cas v milisekundach
+ */
+void MainWindow::setTimeLabel(qint64 time)
+{
+    ui->labelTime->setText("Time: " + QString::number(time) + " ms");
+}
+/**
  * @brief MainWindow::onSliderValChanged - Zapisanie hodnoty slideru do navestia
  * @param val   - hodnota
  */
@@ -262,9 +278,9 @@ void MainWindow::setMousePoint(QPointF point)
 
     /* Jeden bod z mysleneho obdlznika */
     if(!pt)
-        ui->labelPointOne->setText("Point One: x:"+ QString::number(point.x()) +" y:" + QString::number(point.y()));
+        ui->labelPointOne->setText("Point One: x: "+ QString::number(point.x()) +" y: " + QString::number(point.y()));
     else
-        ui->labelPointTwo->setText("Point Two: x:"+ QString::number(point.x()) +" y:" + QString::number(point.y()));
+        ui->labelPointTwo->setText("Point Two: x: "+ QString::number(point.x()) +" y: " + QString::number(point.y()));
 
     controler->setPoint(point);
 }
