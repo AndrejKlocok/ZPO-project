@@ -262,7 +262,9 @@ void MainWindow::setTimeLabel(qint64 time)
 {
     ui->labelTime->setText("Time: " + QString::number(time) + " ms");
 }
-
+/**
+ * @brief MainWindow::onTestClick   -Testovanie casovej zlozitosti
+ */
 void MainWindow::onTestClick()
 {
     INTERPOLATIONS type;
@@ -280,7 +282,7 @@ void MainWindow::onTestClick()
     }
     size_t n = times.size()/2;
     std::nth_element(times.begin(), times.begin() + n, times.end() );
-    qDebug() << times[n];
+    this->setTimeLabel(times[n]);
 }
 /**
  * @brief MainWindow::onSliderValChanged - Zapisanie hodnoty slideru do navestia
