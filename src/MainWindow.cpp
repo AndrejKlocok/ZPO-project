@@ -36,6 +36,8 @@ void MainWindow::setUpSingnals()
     connect(ui->btnZoomIn, &QPushButton::clicked, this, (&MainWindow::onZoomInClick));
     connect(ui->btnZoomOut, &QPushButton::clicked, this, (&MainWindow::onZoomOutClick));
 
+    connect(ui->btnTest, &QPushButton::clicked, this, (&MainWindow::onTestClick));
+
     //onValueChanged
     connect(ui->degreeSlider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValChanged(int)));
 
@@ -259,6 +261,26 @@ void MainWindow::checkOptions(INTERPOLATIONS *type, ROTATIONS *rotations)
 void MainWindow::setTimeLabel(qint64 time)
 {
     ui->labelTime->setText("Time: " + QString::number(time) + " ms");
+}
+
+void MainWindow::onTestClick()
+{
+    INTERPOLATIONS type;
+    ROTATIONS rotate;
+    qint64 time;
+    std::vector<qint64> times;
+    /*  Osetrenie priblizeneho obrazka  */
+    this->checkZoom();
+    /*  Skontrolovanie moznosti radiobutonov */
+    this->checkOptions(&type, &rotate);
+    /* Prevedenie rotacie */
+    for(int i =0; i<50; i++){
+        time = controler->rotateImg(ui->degreeSlider->value(), type, rotate);
+        times.push_back(time);
+    }
+    size_t n = times.size()/2;
+    std::nth_element(times.begin(), times.begin() + n, times.end() );
+    qDebug() << times[n];
 }
 /**
  * @brief MainWindow::onSliderValChanged - Zapisanie hodnoty slideru do navestia

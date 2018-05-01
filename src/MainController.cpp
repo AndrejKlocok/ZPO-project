@@ -152,7 +152,7 @@ qint64 MainController::rotatePart(int degree, INTERPOLATIONS type, ROTATIONS rot
     QElapsedTimer timer;
     cv::Mat img;
     img = this->getDstImage();
-    /*  Zistenie sterdu */
+    /*  Zistenie stredu */
     cv::Point2f middle = cv::Point2f(abs(secondPoint.x() - firstPoint.x())/2 + firstPoint.x(), abs(secondPoint.y() - firstPoint.y())/2 + firstPoint.y());
 
     /* Spustime casovac */
@@ -161,8 +161,7 @@ qint64 MainController::rotatePart(int degree, INTERPOLATIONS type, ROTATIONS rot
     this->dstImage = transformation->rotatePart(degree, img, type, &rectangle, &middle, rotate);
 
     /* Uprava vyrezu    */
-    cv::Rect rec(firstPoint.y(), firstPoint.x(), abs(secondPoint.y() - firstPoint.y()) + 1, abs(secondPoint.x() - firstPoint.x())+ 1);
-    this->rectangle = cv::RotatedRect(middle, rec.size(), degree);
+    this->rectangle = cv::RotatedRect(middle, this->rectangle.size, degree);
 
     /* Posleme vysledny cas */
     return timer.elapsed();

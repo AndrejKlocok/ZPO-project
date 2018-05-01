@@ -42,6 +42,7 @@ private:
     void checkZoom();
     void checkOptions(INTERPOLATIONS *type, ROTATIONS *rotations);
     void setTimeLabel(qint64 time);
+    void onTestClick();
 
     MainController *controler;
     Ui::MainWindow *ui;

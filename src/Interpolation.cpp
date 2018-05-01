@@ -32,11 +32,11 @@ void Interpolation::NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transfo
 
 }
 /**
- * @brief Interpolation::Bilinear
- * @param src
- * @param dst
- * @param transformation
- * @param size
+ * @brief Interpolation::Bilinear - Interpolacia metodou 4 okolia
+ * @param src               - vstupny obrazok
+ * @param dst               - vystupny obrazok
+ * @param transformation    - transformacna matica
+ * @param size              - velkost vystupneho obrazka
  */
 void Interpolation::Bilinear(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size)
 {
@@ -98,11 +98,11 @@ float Interpolation::cubicInterpolateRow (float p0, float p1, float p2, float p3
     return p1+0.5*x*(p2-p0+x*(2.0*p0-5.0*p1+4.0*p2-p3+x*(3.0*(p1-p2)+p3-p2)));
 }
 /**
- * @brief Interpolation::Bicubic
- * @param src
- * @param dst
- * @param transformation
- * @param size
+ * @brief Interpolation::Bicubic - Bikubicka interpolacia
+ * @param src               - vstupny obrazok
+ * @param dst               - vystupny obrazok
+ * @param transformation    - transformacna matica
+ * @param size              - velkost vystupneho obrazka
  */
 void Interpolation::Bicubic(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size)
 {
