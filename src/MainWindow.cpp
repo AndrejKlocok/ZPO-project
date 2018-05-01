@@ -102,8 +102,8 @@ void MainWindow::onSaveImageClick()
 void MainWindow::onRotateImageRowsClick()
 {
     try{
-        Interpolation::INTERPOLATIONS type;
-        Transformation::ROTATIONS rotate;
+        INTERPOLATIONS type;
+        ROTATIONS rotate;
         qint64 time;
 
         /*  Osetrenie priblizeneho obrazka  */
@@ -152,8 +152,8 @@ void MainWindow::onReloadBtnClick()
 void MainWindow::onRotatePartClick()
 {
     try{
-        Interpolation::INTERPOLATIONS type;
-        Transformation::ROTATIONS rotate;
+        INTERPOLATIONS type;
+        ROTATIONS rotate;
         qint64 time;
 
         /*  Osetrenie priblizeneho obrazka  */
@@ -230,25 +230,25 @@ void MainWindow::checkZoom()
  * @param type      - typ interpolacie
  * @param rotations - typ rotacie
  */
-void MainWindow::checkOptions(Interpolation::INTERPOLATIONS *type, Transformation::ROTATIONS *rotations)
+void MainWindow::checkOptions(INTERPOLATIONS *type, ROTATIONS *rotations)
 {
     /* Zistenie interpolacie */
     if(ui->radioNearest->isChecked()){
-        *type = Interpolation::INTERPOLATIONS::nearest;
+        *type = INTERPOLATIONS::nearest;
     }
     else if(ui->radioBilinear->isChecked()){
-        *type = Interpolation::INTERPOLATIONS::bilinear;
+        *type = INTERPOLATIONS::bilinear;
     }
     else {
-        *type = Interpolation::INTERPOLATIONS::bicubic;
+        *type = INTERPOLATIONS::bicubic;
     }
 
     /* Zistenie typu rotacie */
     if(ui->radioRotateNormal->isChecked()){
-        *rotations = Transformation::ROTATIONS::normal;
+        *rotations = ROTATIONS::normal;
     }
     else {
-        *rotations = Transformation::ROTATIONS::shear;
+        *rotations = ROTATIONS::shear;
     }
 
 }

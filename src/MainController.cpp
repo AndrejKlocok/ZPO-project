@@ -106,7 +106,7 @@ void MainController::saveImage(QString path)
  * @param type      - typ interpolacie
  * @param rotate    - typ rotacie
  */
-qint64 MainController::rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
+qint64 MainController::rotateImg(int degree, INTERPOLATIONS type, ROTATIONS rotate)
 {
     QElapsedTimer timer;
     cv::Mat img;
@@ -119,10 +119,10 @@ qint64 MainController::rotateImg(int degree, Interpolation::INTERPOLATIONS type,
 
     /*  Na zaklade typu rotacie volam metodu z moznosti */
     switch (rotate) {
-    case Transformation::ROTATIONS::normal:
+    case ROTATIONS::normal:
         this->dstImage = transformation->rotateNormal(degree, img, type, middle, this->resized);
         break;
-    case Transformation::ROTATIONS::shear:
+    case ROTATIONS::shear:
         this->dstImage = transformation->rotateShear(degree, img, type, middle, this->resized);
         break;
     default:
@@ -147,7 +147,7 @@ void MainController::flipPoints()
  * @param type      - typ interpolacie
  * @param rotate    - typ rotacie
  */
-qint64 MainController::rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate)
+qint64 MainController::rotatePart(int degree, INTERPOLATIONS type, ROTATIONS rotate)
 {
     QElapsedTimer timer;
     cv::Mat img;

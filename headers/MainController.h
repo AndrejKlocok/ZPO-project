@@ -22,9 +22,9 @@ public:
     MainController();
     void loadImage(QString path);
     void saveImage(QString path);
-    qint64 rotateImg(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
+    qint64 rotateImg(int degree, INTERPOLATIONS type, ROTATIONS rotate);
     void flipPoints();
-    qint64 rotatePart(int degree, Interpolation::INTERPOLATIONS type, Transformation::ROTATIONS rotate);
+    qint64 rotatePart(int degree, INTERPOLATIONS type, ROTATIONS rotate);
     void imageReset();
     void scaleImg(float times);
 

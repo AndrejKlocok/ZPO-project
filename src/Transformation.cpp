@@ -52,7 +52,7 @@ cv::Mat Transformation::createRotateShearMatrix(int degree, cv::Point2f middle)
  * @param type      - typ interpolacie
  * @param resized   - bool urcujuci existenciu boudning boxu
  */
-void Transformation::adjustSize(cv::Mat &result,cv::Mat &M, cv::Mat &img, int degree, Interpolation::INTERPOLATIONS type, bool resized)
+void Transformation::adjustSize(cv::Mat &result,cv::Mat &M, cv::Mat &img, int degree, INTERPOLATIONS type, bool resized)
 {
     /*  Zobrazenie celeho obrazku pri aplikovani rotacie */
     if(!resized){
@@ -78,7 +78,7 @@ void Transformation::adjustSize(cv::Mat &result,cv::Mat &M, cv::Mat &img, int de
  * @param resized   - bool urcujuci existenciu boudning boxu
  * @return          - vysledny obrazok
  */
-cv::Mat Transformation::rotateShear(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle, bool resized)
+cv::Mat Transformation::rotateShear(int degree, cv::Mat &img, INTERPOLATIONS type, cv::Point2f middle, bool resized)
 {
     cv::Mat result, M;
 
@@ -97,7 +97,7 @@ cv::Mat Transformation::rotateShear(int degree, cv::Mat &img, Interpolation::INT
  * @param rotate    - typ rotacie
  * @return          - vysledny obrazok
  */
-cv::Mat Transformation::rotatePart(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::RotatedRect * rectangle, cv::Point2f * middle, Transformation::ROTATIONS rotate)
+cv::Mat Transformation::rotatePart(int degree, cv::Mat &img, INTERPOLATIONS type, cv::RotatedRect * rectangle, cv::Point2f * middle, ROTATIONS rotate)
 {
     cv::Mat imgTmp, imgSmall, rotated;
     cv::Vec3b blackColor;
@@ -121,10 +121,10 @@ cv::Mat Transformation::rotatePart(int degree, cv::Mat &img, Interpolation::INTE
 
     /* Rotacia */
     switch (rotate) {
-    case Transformation::ROTATIONS::normal:
+    case ROTATIONS::normal:
         rotated = this->rotateNormal(degree, imgSmall, type, *middle, true);
         break;
-    case Transformation::ROTATIONS::shear:
+    case ROTATIONS::shear:
         rotated = this->rotateShear(degree, imgSmall, type, *middle, true);
         break;
     default:
@@ -149,7 +149,7 @@ cv::Mat Transformation::rotatePart(int degree, cv::Mat &img, Interpolation::INTE
  * @param resized   - bool urcujuci existenciu boudning boxu
  * @return          - vysledny obrazok
  */
-cv::Mat Transformation::rotateNormal(int degree, cv::Mat &img, Interpolation::INTERPOLATIONS type, cv::Point2f middle, bool resized)
+cv::Mat Transformation::rotateNormal(int degree, cv::Mat &img, INTERPOLATIONS type, cv::Point2f middle, bool resized)
 {
     double rad;
 
@@ -210,19 +210,19 @@ cv::Mat Transformation::scale(float times, cv::Mat &img)
  * @param M         - rotacna matica
  * @param size      - velkost vysledneho obrazka
  */
-void Transformation::interpolate(Interpolation::INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M, cv::Size size)
+void Transformation::interpolate(INTERPOLATIONS type, cv::Mat &img, cv::Mat &result, cv::Mat &M, cv::Size size)
 {
     /*  Typ interpolacie */
     switch (type) {
-    case Interpolation::INTERPOLATIONS::nearest:
+    case INTERPOLATIONS::nearest:
         this->interpolation->NearestNeighbor(img, result, M, size);
         break;
 
-    case Interpolation::INTERPOLATIONS::bilinear:
+    case INTERPOLATIONS::bilinear:
         this->interpolation->Bilinear(img, result, M,size);
         break;
 
-    case Interpolation::INTERPOLATIONS::bicubic:
+    case INTERPOLATIONS::bicubic:
         this->interpolation->Bicubic(img, result, M, size);
         break;
 

@@ -3,15 +3,17 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
+#include<QDebug>
 /**
  * @brief The Interpolation class
  */
+
+enum INTERPOLATIONS {nearest, bilinear, bicubic};
+
 class Interpolation
 {
 
 public:
-    enum INTERPOLATIONS {nearest, bilinear, bicubic};
     Interpolation();
     void NearestNeighbor(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size);
     void Bilinear(cv::Mat &src, cv::Mat &dst, cv::Mat &transformation, cv::Size size);

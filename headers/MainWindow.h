@@ -40,7 +40,7 @@ private:
     void onZoomOutClick();
     void setScrollBars(bool value);
     void checkZoom();
-    void checkOptions(Interpolation::INTERPOLATIONS *type, Transformation::ROTATIONS *rotations);
+    void checkOptions(INTERPOLATIONS *type, ROTATIONS *rotations);
     void setTimeLabel(qint64 time);
 
     MainController *controler;
