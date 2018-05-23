@@ -11,7 +11,7 @@ class Adapter
 {
 public:
    Adapter();
-   QPixmap convertMatToQPixmap(cv::Mat img);
+   QPixmap convertMatToQPixmap(cv::Mat img,bool GreyScale);
 };
 
 #endif // ADAPTER_H

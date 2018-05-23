@@ -1,6 +1,7 @@
 #include "../headers/MainWindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <string>
 /**
  * @brief MainWindow::MainWindow
  * @param parent
@@ -35,7 +36,9 @@ void MainWindow::setUpSingnals()
     connect(ui->btnRotatePart, &QPushButton::clicked, this, (&MainWindow::onRotatePartClick));
     connect(ui->btnZoomIn, &QPushButton::clicked, this, (&MainWindow::onZoomInClick));
     connect(ui->btnZoomOut, &QPushButton::clicked, this, (&MainWindow::onZoomOutClick));
-
+    //testovani
+    connect(ui->btnCompare, &QPushButton::clicked, this, (&MainWindow::onCompareClick));
+    connect(ui->btnCompareGrayScale, &QPushButton::clicked, this, (&MainWindow::onCompareGrayScaleClick));
     connect(ui->btnTest, &QPushButton::clicked, this, (&MainWindow::onTestClick));
 
     //onValueChanged
@@ -49,10 +52,10 @@ void MainWindow::setUpSingnals()
  * @brief MainWindow::displayImage  - Metoda zaistuje zobrazenie obrazku na View v okne.
  * @param img   - obrazok
  */
-void MainWindow::displayImage(cv::Mat img, bool setSize)
+void MainWindow::displayImage(cv::Mat img, bool setSize,bool GreyScale)
 {
     scene = new QGraphicsScene(this);
-    scene->addPixmap(controler->showImage(img));
+    scene->addPixmap(controler->showImage(img,GreyScale));
     ui->srcImageView->setScene(scene);
     if(setSize)
         ui->srcImageView->setFixedSize(QSize(img.cols, img.rows));
@@ -76,7 +79,7 @@ void MainWindow::onLoadImageClick()
     controler->loadImage(filename);
 
     /* Zobrazenie obrazka   */
-    displayImage(controler->getSrcImage(), true);
+    displayImage(controler->getSrcImage(), true,false);
 }
 /**
  * @brief MainWindow::onSaveImageClick  - Osetrenie eventu na ulozenie obrazka.
@@ -117,7 +120,7 @@ void MainWindow::onRotateImageRowsClick()
         /* Zobraz cas */
         this->setTimeLabel(time);
         /* Zobrazenie obrazka */
-        displayImage(controler->getDstImage(), true);
+        displayImage(controler->getDstImage(), true,false);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to rotate image") );
@@ -134,7 +137,7 @@ void MainWindow::onReloadBtnClick()
         /*  Zoom    */
         this->zoomCnt = 0;
         /* Zobrazenie povodneho obrazku */
-        displayImage(controler->getSrcImage(), true);
+        displayImage(controler->getSrcImage(), true,false);
         /* Resetovanie kontrolera */
         controler->imageReset();
         /* Resetovanie UI   */
@@ -142,6 +145,7 @@ void MainWindow::onReloadBtnClick()
         ui->labelPointOne->setText("Point One: x: 0 y: 0");
         ui->labelPointTwo->setText("Point One: x: 0 y: 0");
         this->setTimeLabel(0);
+        this->setDifferenceLabel(0);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to reload image") );
@@ -167,7 +171,7 @@ void MainWindow::onRotatePartClick()
         /* Zobraz cas */
         this->setTimeLabel(time);
         /* Zobrazenie obrazka */
-        displayImage(controler->getDstImage(), true);
+        displayImage(controler->getDstImage(), true,false);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Mark the area") );
@@ -182,7 +186,7 @@ void MainWindow::onZoomInClick()
         this->zoomCnt+=1;
         controler->scaleImg(2);
         this->setScrollBars(true);
-        displayImage(controler->getDstImage(), false);
+        displayImage(controler->getDstImage(), false,false);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to scale image") );
@@ -197,7 +201,7 @@ void MainWindow::onZoomOutClick()
         this->zoomCnt-=1;
         controler->scaleImg(0.5);
         this->setScrollBars(true);
-        displayImage(controler->getDstImage(), false);
+        displayImage(controler->getDstImage(), false,false);
     }
     catch (std::exception e){
         QMessageBox::information(this,tr("Error"), tr("Unable to scale image") );
@@ -255,6 +259,13 @@ void MainWindow::checkOptions(INTERPOLATIONS *type, ROTATIONS *rotations)
 
 }
 /**
+ * @brief MainWindow::setDifferenceLabel - Zapise vyslednou differenci
+ */
+void MainWindow::setDifferenceLabel(double differenc)
+{
+    ui->labelDifference->setText("Difference: " + QString::number(differenc) + " %");
+}
+/**
  * @brief MainWindow::setTimeLabel - Zapise vysledny cas na label
  * @param time  - cas v milisekundach
  */
@@ -283,6 +294,105 @@ void MainWindow::onTestClick()
     size_t n = times.size()/2;
     std::nth_element(times.begin(), times.begin() + n, times.end() );
     this->setTimeLabel(times[n]);
+}
+/**
+ * @brief MainWindow::onCompareGrayScaleClick - porovnani vysledku rotace a interpolace s puvodnim obrazem v GrayScale
+ */
+void MainWindow::onCompareGrayScaleClick()
+{
+    cv::Mat sourceImg;
+    cv::Mat sourceImgGrayScale;
+    cv::Mat rotatedImg;
+    cv::Mat differenceImg;
+    cv::Mat rot_mat( 2, 3, CV_32FC1 );
+    cv::Mat cropped;
+    cv::Mat croppedGrayScale;
+    cv::Point2f middle;
+
+    try{
+
+        INTERPOLATIONS type;
+        ROTATIONS rotate;
+        qint64 time;
+        //nactu si source image
+        sourceImg = controler->getSrcImage();
+        //vytvori si matici v grayscale formatu
+        croppedGrayScale =  cv::Mat::zeros(sourceImg.cols,sourceImg.rows, CV_8UC1);
+        middle = cv::Point2f(0.5f*sourceImg.cols, 0.5f*sourceImg.rows);
+        //vytvoreni rotacni matice
+        rot_mat = getRotationMatrix2D(middle, ui->degreeSlider->value(), 1 );
+
+        /*  Osetrenie priblizeneho obrazka  */
+        this->checkZoom();
+        /*  Skontrolovanie moznosti radiobutonov */
+        this->checkOptions(&type, &rotate);
+        //provedeni rotace o uhel a zpetna rotace
+        time = controler->rotateImg(ui->degreeSlider->value(), type, rotate);
+        time =time + controler->rotateImg(-(ui->degreeSlider->value()), type, rotate);
+        /* Zobraz cas */
+        this->setTimeLabel(time);
+        //oriznuti rotovaneho obrazu, chci se zbavit cernych pixelu
+        cv::Rect myROI((controler->getDstImage().cols-sourceImg.cols)/2, (controler->getDstImage().rows-sourceImg.rows)/2, sourceImg.cols, sourceImg.rows);
+        cv::Mat croppedRef(controler->getDstImage(), myROI);
+        // okopiruji data do nove matice
+        croppedRef.copyTo(cropped);
+        //prevedu oba obrazy do grayscale
+        cv::cvtColor(cropped, croppedGrayScale, CV_RGB2GRAY);
+        cv::cvtColor(sourceImg, sourceImgGrayScale, CV_RGB2GRAY);
+        //zavolam fci, ktera vypocita rozdil obrazu
+        differenceImg = testDiffGrayScale(croppedGrayScale,sourceImgGrayScale);
+        //zobrazim tento rozdil
+        displayImage(differenceImg, true,true);
+    }
+    catch (std::exception e){
+        QMessageBox::information(this,tr("Error"), tr("Unable to rotate image") );
+        this->onReloadBtnClick();
+    }
+}
+
+/**
+ * @brief MainWindow::onCompareClick - porovnani vysledku rotace a interpolace s puvodnim obrazem
+ */
+void MainWindow::onCompareClick()
+{
+    cv::Mat sourceImg;
+    cv::Mat rotatedImg;
+    cv::Mat differenceImg;
+    cv::Mat rot_mat( 2, 3, CV_32FC1 );
+    cv::Point2f middle;
+    try{
+        INTERPOLATIONS type;
+        ROTATIONS rotate;
+        qint64 time;
+        //nactu si source image
+        sourceImg = controler->getSrcImage();
+        middle = cv::Point2f(0.5f*sourceImg.cols, 0.5f*sourceImg.rows);
+        rot_mat = getRotationMatrix2D(middle, ui->degreeSlider->value(), 1 );
+
+        /*  Osetrenie priblizeneho obrazka  */
+        this->checkZoom();
+        /*  Skontrolovanie moznosti radiobutonov */
+        this->checkOptions(&type, &rotate);
+        // provedeni rotace o zadany uhel a zpet
+        time = controler->rotateImg(ui->degreeSlider->value(), type, rotate);
+        time = controler->rotateImg(-(ui->degreeSlider->value()), type, rotate);
+        /* Zobraz cas */
+        this->setTimeLabel(time);
+        //oriznuti obrazu, zbavim se cernych pixelu
+        cv::Rect myROI((controler->getDstImage().cols-sourceImg.cols)/2, (controler->getDstImage().rows-sourceImg.rows)/2, sourceImg.cols, sourceImg.rows);
+        cv::Mat croppedRef(controler->getDstImage(), myROI);
+        cv::Mat cropped;
+        //okopirovani noveho orabzu
+        croppedRef.copyTo(cropped);
+        //vypocet difference obrazu v RGB
+        differenceImg = testDiff(cropped,sourceImg);
+        //zobrazeni vysledku difference
+        displayImage(differenceImg, true,false);
+    }
+    catch (std::exception e){
+        QMessageBox::information(this,tr("Error"), tr("Unable to rotate image") );
+        this->onReloadBtnClick();
+    }
 }
 /**
  * @brief MainWindow::onSliderValChanged - Zapisanie hodnoty slideru do navestia
@@ -315,3 +425,61 @@ void MainWindow::adjustWindowSize()
 {
     adjustSize();
 }
+
+/**
+ * @brief MainWindow::testDiff  - vypocte difference jednotlivych pixelu
+ */
+cv::Mat MainWindow::testDiff(cv::Mat DstImage,cv::Mat SourceImg)
+{
+    double diff;
+    uchar newPixel;
+    //inicializace vysledne matice
+    cv::Mat outputMat;
+    outputMat =  cv::Mat::zeros(DstImage.rows,DstImage.cols, DstImage.type());
+    //pixel po pixelu odecitam odpovidajici hodnoty obrazu
+    for( int x=0; x<DstImage.rows;x++){
+        for(int y=0; y<DstImage.cols; y++){
+            //novy pixel, ulozim si hodnoty, pouziji je pro vypocet difference
+            newPixel = abs(DstImage.at<cv::Vec3b>(x,y).val[0] - SourceImg.at<cv::Vec3b>(x,y).val[0]);
+            outputMat.at<cv::Vec3b>(x, y).val[0] = newPixel;
+            diff += (double)newPixel/255;
+            newPixel = abs(DstImage.at<cv::Vec3b>(x,y).val[1] - SourceImg.at<cv::Vec3b>(x,y).val[1]);
+            outputMat.at<cv::Vec3b>(x, y).val[1] = newPixel;
+            diff += (double)newPixel/255;
+            newPixel = abs(DstImage.at<cv::Vec3b>(x,y).val[2] - SourceImg.at<cv::Vec3b>(x,y).val[2]);
+            outputMat.at<cv::Vec3b>(x, y).val[2] = newPixel;
+            diff += (double)newPixel/255;
+
+        }
+    }
+    //vypocet difference = soucet vsech absolutnich hodnot rozdilu pixelu/velikost obrazu*3barvy to cele *100(procenta)
+    diff = (diff/(DstImage.rows*DstImage.cols*3))*100;
+    this->setDifferenceLabel(diff);
+
+    return outputMat;
+}
+/**
+ * @brief MainWindow::testDiffGrayScale  - vypocte difference jednotlivych pixelu GrayScale
+ */
+cv::Mat MainWindow::testDiffGrayScale(cv::Mat DstImage,cv::Mat SourceImg)
+{
+    double diff;
+    uchar newPixel;
+    //inicializace vystupni matice
+    cv::Mat outputMat;
+    outputMat =  cv::Mat::zeros(DstImage.rows,DstImage.cols, DstImage.type());
+    // pixel po pixelu odecitam jedinou slozku grayscale obrazu
+    for( int x=0; x<DstImage.rows;x++){
+        for(int y=0; y<DstImage.cols; y++){
+            newPixel = abs(DstImage.at<uchar>(x,y) - SourceImg.at<uchar>(x,y));
+            diff += (double)newPixel/255;
+            outputMat.at<uchar>(x, y) = newPixel;
+
+        }
+    }
+    //vypocet difference = soucet vsech absolutnich hodnot rozdilu pixelu/velikost obrazu to cele *100(procenta)
+    diff = (diff/(DstImage.rows*DstImage.cols))*100;
+    this->setDifferenceLabel(diff);
+    return outputMat;
+}
+

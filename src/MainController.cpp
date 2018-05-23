@@ -29,9 +29,9 @@ cv::Mat MainController::getDstImage()
  * @param image
  * @return
  */
-QPixmap MainController::showImage(cv::Mat image)
+QPixmap MainController::showImage(cv::Mat image,bool GreyScale)
 {
-    return this->adapter->convertMatToQPixmap(image);
+    return this->adapter->convertMatToQPixmap(image,GreyScale);
 }
 /**
  * @brief MainController::getSecondPoint

@@ -7,7 +7,7 @@
 
 #include "../headers/MainController.h"
 #include "../headers/ImageGraphicsView.h"
-
+#include <string>
 namespace Ui {
 class MainWindow;
 }
@@ -30,7 +30,7 @@ private slots:
 
 private:
     void setUpSingnals();
-    void displayImage(cv::Mat img, bool setSize);
+    void displayImage(cv::Mat img, bool setSize,bool GreyScale);
     void onLoadImageClick();
     void onSaveImageClick();
     void onRotateImageRowsClick();
@@ -42,7 +42,13 @@ private:
     void checkZoom();
     void checkOptions(INTERPOLATIONS *type, ROTATIONS *rotations);
     void setTimeLabel(qint64 time);
+    void setDifferenceLabel(double difference);
     void onTestClick();
+    void onCompareClick();
+    void onCompareGrayScaleClick();
+    cv::Mat testDiff(cv::Mat DstImage,cv::Mat SourceImg);
+    cv::Mat testDiffGrayScale(cv::Mat DstImage,cv::Mat SourceImg);
+    cv::Mat toGrayScale(cv::Mat SourceImg);
 
     MainController *controler;
     Ui::MainWindow *ui;

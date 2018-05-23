@@ -30,7 +30,7 @@ public:
 
     cv::Mat getSrcImage();
     cv::Mat getDstImage();
-    QPixmap showImage(cv::Mat image);
+    QPixmap showImage(cv::Mat image, bool GrayScale);
 
     QPointF getFirstPoint() const;
     void setPoint(const QPointF &value);

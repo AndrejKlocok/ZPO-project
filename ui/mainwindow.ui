@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>824</width>
-    <height>565</height>
+    <width>794</width>
+    <height>641</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -192,7 +192,7 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>8</pointsize>
+              <pointsize>9</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -217,7 +217,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Point Two x: 0 y: 0</string>
+             <string>Point Two: x: 0 y: 0</string>
             </property>
            </widget>
           </item>
@@ -275,7 +275,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="slidetVertLayout" stretch="1,1">
+         <layout class="QVBoxLayout" name="slidetVertLayout" stretch="1,0,1">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_16">
             <item>
@@ -331,23 +331,80 @@
            </layout>
           </item>
           <item>
+           <widget class="QPushButton" name="btnTest">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Test</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <layout class="QVBoxLayout" name="verticalLayout_15">
             <item>
-             <widget class="QPushButton" name="btnTest">
+             <widget class="QPushButton" name="btnCompare">
               <property name="minimumSize">
                <size>
-                <width>60</width>
+                <width>100</width>
                 <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>60</width>
+                <width>100</width>
                 <height>30</height>
                </size>
               </property>
               <property name="text">
-               <string>Test</string>
+               <string>Compare</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnCompareGrayScale">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Compare Gray</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelDifference">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Difference: 0 %</string>
               </property>
              </widget>
             </item>
@@ -423,8 +480,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>824</width>
-     <height>15</height>
+     <width>794</width>
+     <height>19</height>
     </rect>
    </property>
   </widget>
